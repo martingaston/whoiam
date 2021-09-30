@@ -1,12 +1,15 @@
 use home;
+use serde::Deserialize;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use toml::value::Map;
-use toml::Value;
 
-// TODO - deserialize this structure into a HashMap<String, String> with serde
+#[derive(Deserialize, Debug)]
+struct WhoIAMToml {
+    accounts: HashMap<String, String>,
+}
 
-pub fn parse_whoiam() -> Value {
+pub fn parse_whoiam() -> HashMap<String, String> {
     let path: PathBuf = [
         home::home_dir().expect("Cannot determine home directory."),
         PathBuf::from(".whoiam.toml"),
@@ -16,10 +19,8 @@ pub fn parse_whoiam() -> Value {
 
     let contents =
         fs::read_to_string(path).expect("Error reading ~/.whoiam.toml file. Check that it exists?");
-    let toml = contents.parse::<Value>().unwrap();
 
-    match toml["accounts"].is_table() {
-        true => toml["accounts"].clone(), // is there a way to do this without cloning? This shouldn't be needed after the serde part, just curious
-        false => Value::Table(Map::new()),
-    }
+    let toml: WhoIAMToml = toml::from_str(&contents)
+        .expect("Could not parse ~/.whoiam.toml file. Does it have an accounts table?");
+    return toml.accounts;
 }
