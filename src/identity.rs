@@ -1,3 +1,4 @@
+use aws_config;
 use aws_sdk_sts::{error::GetCallerIdentityError, Client, SdkError};
 pub struct IAMIdentity {
     pub user_id: Option<String>,
@@ -6,7 +7,8 @@ pub struct IAMIdentity {
 }
 
 pub async fn get_identity() -> Result<IAMIdentity, SdkError<GetCallerIdentityError>> {
-    let client = Client::from_env();
+    let config = aws_config::load_from_env().await;
+    let client = Client::new(&config);
     let identity = client.get_caller_identity();
 
     return match identity.send().await {

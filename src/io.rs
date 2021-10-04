@@ -1,17 +1,24 @@
 use crate::identity::IAMIdentity;
+use ansi_term::Colour::{Blue, Green};
 use std::collections::HashMap;
 
-// TODO: this feels uggo
 pub fn output_identity_to_stdout(identity: IAMIdentity, accounts: HashMap<String, String>) {
-    println!("user id: {}", identity.user_id.unwrap_or("".to_string()));
-    match identity.account {
-        Some(account_number) => match accounts.get(&account_number) {
-            Some(account_name) => {
-                println!("account: {} ({})", account_name, account_number)
+    match (identity.user_id, identity.account, identity.arn) {
+        (Some(user_id), Some(account_number), Some(arn)) => {
+            println!("{} {}", Green.bold().paint("user id:"), user_id);
+            match accounts.get(&account_number) {
+                Some(account_name) => {
+                    println!(
+                        "{} {} ({})",
+                        Green.bold().paint("account:"),
+                        account_name,
+                        Blue.paint(account_number)
+                    );
+                }
+                None => println!("{} {}", Green.bold().paint("account:"), account_number),
             }
-            None => println!("account: {}", account_number),
-        },
-        None => (),
-    }
-    println!("arn: {}", identity.arn.unwrap_or("".to_string()));
+            println!("{} {}", Green.bold().paint("arn:"), arn);
+        }
+        (_, _, _) => panic!("AWS sent an unexpected response, bailing..."),
+    };
 }

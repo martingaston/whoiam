@@ -6,11 +6,13 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-aws-sdk-sts = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.16-alpha", package = "aws-sdk-sts" }
+aws-config = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.19-alpha" }
+aws-sdk-sts = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.19-alpha", package = "aws-sdk-sts" }
 tokio = { version = "1", features = ["full"] }
 toml = "0.5.8"
 home = "0.5.3"
 serde = { version = "1.0.130", features = ["derive"] }
+ansi_term = "0.12.1"
 
 [profile.release]
 opt-level = "z"  # Optimize for size.
